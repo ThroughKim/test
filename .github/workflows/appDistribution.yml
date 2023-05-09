@@ -76,9 +76,15 @@ jobs:
         run: |
           xcodebuild clean archive -project $XC_PROJECT -scheme $XC_SCHEME -configuration release -archivePath $XC_ARCHIVE
       - name: Export app
-        # export 를 통해 ipa 파일 만듦
+        # export 를 통해 ipa 파일 만듬
         run: |
           xcodebuild -exportArchive -archivePath $XC_ARCHIVE -exportOptionsPlist ExportOptions.plist -exportPath . -allowProvisioningUpdates
+      - name: Upload ipa
+        uses: actions/upload-artifact@v2
+        with:
+          name: test.ipa
+          path: test.ipa
+
   distribute-ios:
     needs: build
     runs-on: ubuntu-latest
