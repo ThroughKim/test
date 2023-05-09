@@ -8,8 +8,8 @@ on:
     
 # workflow의 실행은 하나 이상의 job으로 구성 됨
 jobs:
-  # 이 workflow 는 "deploy" 라는 single job 으로 구성
-  deploy:
+  # 이 workflow 는 "build"와 "distribute-ios"라는 두개의 job으로 구성
+  build:
     # job이 실행될 환경 - 최신 mac os
     runs-on: macos-latest
     env:
@@ -79,7 +79,15 @@ jobs:
         # export 를 통해 ipa 파일 만듦
         run: |
           xcodebuild -exportArchive -archivePath $XC_ARCHIVE -exportOptionsPlist ExportOptions.plist -exportPath . -allowProvisioningUpdates
-      - name: upload artifact to Firebase App Distribution
+  distribute-ios:
+    needs: build
+    runs-on: ubuntu-latest
+    
+    env:
+      XC_ARCHIVE: ${{ 'test.xcarchive' }} # 종전 build 결과물 위치
+    
+    steps:
+      - name: Upload artifact to Firebase App Distribution
         # Firebase App Distribution에 업로드
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
